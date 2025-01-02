@@ -13,7 +13,7 @@ db.run(`
             userId TEXT NOT NULL,
             username TEXT NOT NULL,
             eventId TEXT NOT NULL,
-            attempts TEXT NOT NULL,
+            list TEXT NOT NULL,
             best INTEGER,
             average INTEGER,
             UNIQUE(userId, eventId)

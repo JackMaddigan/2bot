@@ -2,29 +2,29 @@ require("dotenv").config();
 
 const { Client, IntentsBitField } = require("discord.js");
 const { registerCommands } = require("./commands");
-const runSummary = require("./bld-summary/bld-summary");
 const cron = require("node-cron");
-const { readData, saveData } = require("./db");
-
-// Weekly Comp imports
-const { eventFormatToProcessAndObj, events } = require("./weekly-comp/events");
+const { handleSubmit } = require("./weekly-comp/submit");
 const { handleCurrentRankings } = require("./weekly-comp/results");
-const handleSubmit = require("./weekly-comp/submit");
+const { handleView } = require("./weekly-comp/view");
+const { handleUnsubmit } = require("./weekly-comp/unsubmit");
 const { handleWeeklyComp } = require("./weekly-comp/comp");
-const handleView = require("./weekly-comp/view");
-const handleUnsubmit = require("./weekly-comp/unsubmit");
 
 const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,
     IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.MessageContent,
   ],
 });
 
 client.once("ready", async (bot) => {
   console.log(bot.user.username + " is online!");
+  try {
+    await handleWeeklyComp(client);
+    // await registerCommands(client);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 client.on("interactionCreate", async (int) => {

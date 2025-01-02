@@ -18,6 +18,12 @@ async function registerCommands(client) {
               .setDescription("Enter your results separated by a space")
               .setRequired(true)
           )
+          .addUserOption((option) =>
+            option
+              .setName("submit-for")
+              .setDescription("The user")
+              .setRequired(false)
+          )
       );
     }
 

@@ -21,7 +21,8 @@ async function generateRankedResults() {
         result.list,
         result.best,
         result.average,
-        result.bestAo5
+        result.bestAo5,
+        events[result.eventId].attempts
       )
     );
   }

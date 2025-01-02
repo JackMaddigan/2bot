@@ -21,7 +21,7 @@ client.once("ready", async (bot) => {
   console.log(bot.user.username + " is online!");
   try {
     // await handleWeeklyComp(client);
-    // await registerCommands(client);
+    await registerCommands(client);
   } catch (error) {
     console.error(error);
   }
@@ -51,7 +51,7 @@ client.on("interactionCreate", async (int) => {
 });
 
 // weekly comp
-cron.schedule("0 20 * * 4", async () => {
+cron.schedule("0 20 * * 3", async () => {
   console.log("2000 Handling Comp");
   try {
     await handleWeeklyComp(client);

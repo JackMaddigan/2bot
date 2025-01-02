@@ -8,7 +8,8 @@ const sharp = require("sharp");
 
 async function sendPodiums(resultsChannel, rankedResultsData, title) {
   // make podium text
-  await resultsChannel.send(title);
+  const lines = [title];
+  // await resultsChannel.send(title);
   for (const eventId in rankedResultsData) {
     const results = rankedResultsData[eventId];
     // no results or first one is dnf
@@ -21,20 +22,29 @@ async function sendPodiums(resultsChannel, rankedResultsData, title) {
     }
 
     if (events[eventId].showBestSingle) {
-      results.sort((a, b) => a.best - b.best);
-      text += `\n\nBest single: ${centiToDisplay(results[0].best)} by <@${
-        results[0].userId
-      }>`;
+      const bestSingleResults = results
+        .filter((result) => result.best > 0)
+        .sort((a, b) => a.best - b.best);
+      if (bestSingleResults.length > 0)
+        text += `\n\nBest single: ${centiToDisplay(results[0].best)} by <@${
+          results[0].userId
+        }>`;
     }
 
     if (events[eventId].showBestAo5) {
-      results.sort((a, b) => a.bestAo5 - b.bestAo5);
-      text += `\nBest Ao5: ${centiToDisplay(results[0].bestAo5)} by <@${
-        results[0].userId
-      }>`;
+      const bestAo5Results = results
+        .filter((result) => result.bestAo5 > 0)
+        .sort((a, b) => a.bestAo5 - b.bestAo5);
+      if (bestAo5Results.length > 0)
+        text += `\nBest Ao5: ${centiToDisplay(
+          bestAo5Results[0].bestAo5
+        )} by <@${bestAo5Results[0].userId}>`;
     }
+    lines.push(text);
+  }
 
-    await resultsChannel.send(text);
+  if (lines.length > 1) {
+    await resultsChannel.send(lines.join("\n\n"));
   }
 }
 
@@ -64,7 +74,7 @@ async function sendScrambles(client, week) {
   );
 
   await scramblesChannel.send(
-    `<@&${process.env.weeklyCompRoleId}> Week ${week} Scrambles!`
+    `Week ${week}: Hello and welcome to our 2x2 solvers comp! During this comp, we will give out 12 scrambles for 2x2, 3 for 2x2 blindfolded and 5 for 2x2 one handed. If you want to submit times, use /submit and type in the individual times for each of the scrambles. They can be comma/space separated, and can have brackets. You can copy paste time list from cstimer. Scrambles will be posted 8pm UTC Wednesday. glhf!\n<@&${process.env.weeklyCompRoleId}>`
   );
 
   const images = [];
@@ -72,7 +82,6 @@ async function sendScrambles(client, week) {
   for (const eventId of Object.keys(events)) {
     const event = events[eventId];
     if (!event.scr) continue;
-    let text = `-\n**${event.name}**`;
     const scrambles = [];
     for (let i = 0; i < event.attempts; i++) {
       const scramble = cstimer.getScramble(event.scr[0], event.scr[1]);
@@ -84,7 +93,7 @@ async function sendScrambles(client, week) {
 
     // Convert SVG to PNG
     const buffer = await sharp(Buffer.from(combinedSVG)).png().toBuffer();
-    images.push({ attachment: buffer, name: "scrambles.png" });
+    images.push({ attachment: buffer, name: "SPOILER_scrambles.png" });
   }
   await scramblesChannel.send({
     files: images,

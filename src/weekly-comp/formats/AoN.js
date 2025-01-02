@@ -80,7 +80,16 @@ function calculateAvgStats(solves) {
  */
 class AoN_Result {
   placing;
-  constructor(userId, username, eventId, list, best, average, bestAo5) {
+  constructor(
+    userId,
+    username,
+    eventId,
+    list,
+    best,
+    average,
+    bestAo5,
+    attempts
+  ) {
     this.userId = userId;
     this.username = username;
     this.eventId = eventId;
@@ -89,6 +98,7 @@ class AoN_Result {
     this.average = average;
     this.isDnf = best <= 0;
     this.bestAo5 = bestAo5;
+    this.attempts = attempts;
   }
 
   compare(other) {
@@ -136,7 +146,7 @@ class AoN_Result {
     const medals = [":first_place:", ":second_place:", ":third_place:"];
     return `\n${medals[this.placing - 1]} <@${this.userId}> **${centiToDisplay(
       this.average
-    )}**\n-# *(${this.list})*`;
+    )}** ao${this.attempts}`;
   }
 }
 

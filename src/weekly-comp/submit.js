@@ -1,4 +1,4 @@
-const { saveData } = require("../db");
+const { saveData, readData } = require("../db");
 const Submission = require("./Submission");
 
 async function handleSubmit(int) {
@@ -15,7 +15,7 @@ async function handleSubmit(int) {
   });
 
   await saveData(
-    `INSERT INTO results (userId, username, eventId, list, best, average) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(userId, eventId) DO UPDATE SET username = excluded.username, list = excluded.list, best = excluded.best, average = excluded.average`,
+    `INSERT INTO results (userId, username, eventId, list, best, average, bestAo5) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(userId, eventId) DO UPDATE SET username = excluded.username, list = excluded.list, best = excluded.best, average = excluded.average, bestAo5=excluded.bestAo5`,
     sub.data
   );
 }

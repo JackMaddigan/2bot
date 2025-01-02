@@ -20,7 +20,8 @@ async function generateRankedResults() {
         result.eventId,
         result.list,
         result.best,
-        result.average
+        result.average,
+        result.bestAo5
       )
     );
   }

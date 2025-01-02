@@ -1,4 +1,5 @@
 const { saveData, readData, deleteData } = require("../db");
+const { centiToDisplay } = require("../helpers/converters");
 const { events } = require("./events");
 const { generateRankedResults } = require("./results");
 const cstimer = require("cstimer_module");
@@ -18,6 +19,21 @@ async function sendPodiums(resultsChannel, rankedResultsData, title) {
       if (result.placing > 3 || result.isDnf) break;
       text += result.toPodiumString();
     }
+
+    if (events[eventId].showBestSingle) {
+      results.sort((a, b) => a.best - b.best);
+      text += `\n\nBest single: ${centiToDisplay(results[0].best)} by <@${
+        results[0].userId
+      }>`;
+    }
+
+    if (events[eventId].showBestAo5) {
+      results.sort((a, b) => a.bestAo5 - b.bestAo5);
+      text += `\nBest Ao5: ${centiToDisplay(results[0].bestAo5)} by <@${
+        results[0].userId
+      }>`;
+    }
+
     await resultsChannel.send(text);
   }
 }

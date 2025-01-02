@@ -8,6 +8,8 @@ const events = {
     scr: ["222so", "0"],
     attempts: 12,
     obj: AoN_Result,
+    showBestSingle: true,
+    showBestAo5: true,
   },
   "2bld": {
     name: "2BLD",
@@ -16,6 +18,8 @@ const events = {
     scr: ["222so", "0"],
     attempts: 5,
     obj: AoN_Result,
+    showBestSingle: true,
+    showBestAo5: false,
   },
   "2oh": {
     name: "2x2 OH",
@@ -24,6 +28,8 @@ const events = {
     scr: ["222so", "0"],
     attempts: 5,
     obj: AoN_Result,
+    showBestSingle: true,
+    showBestAo5: false,
   },
 };
 

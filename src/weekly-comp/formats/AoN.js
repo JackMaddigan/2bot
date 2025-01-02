@@ -29,13 +29,13 @@ function processAoN(resultText, sub) {
       list,
       best,
       average,
+      bestAo5,
     },
     chatResponse: {
       text: `(${list}) = ${centiToDisplay(average)} average${
         sub.showSubmitFor ? ` for <@${sub.userId}>` : ""
       }`,
     },
-    bestAo5,
     error: false,
   };
 }
@@ -80,7 +80,7 @@ function calculateAvgStats(solves) {
  */
 class AoN_Result {
   placing;
-  constructor(userId, username, eventId, list, best, average) {
+  constructor(userId, username, eventId, list, best, average, bestAo5) {
     this.userId = userId;
     this.username = username;
     this.eventId = eventId;
@@ -88,6 +88,7 @@ class AoN_Result {
     this.best = best;
     this.average = average;
     this.isDnf = best <= 0;
+    this.bestAo5 = bestAo5;
   }
 
   compare(other) {
@@ -128,7 +129,7 @@ class AoN_Result {
   toTxtFileString() {
     return `\n#${this.placing} ${this.username} average: ${centiToDisplay(
       this.average
-    )}, best:${centiToDisplay(this.best)}\n  (${this.list})`;
+    )}, best: ${centiToDisplay(this.best)}\n  (${this.list})`;
   }
 
   toPodiumString() {

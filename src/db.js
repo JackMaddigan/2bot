@@ -16,6 +16,7 @@ db.run(`
             list TEXT NOT NULL,
             best INTEGER,
             average INTEGER,
+            bestAo5 INTEGER,
             UNIQUE(userId, eventId)
         )
     `);

@@ -20,7 +20,7 @@ const client = new Client({
 client.once("ready", async (bot) => {
   console.log(bot.user.username + " is online!");
   try {
-    await handleWeeklyComp(client);
+    // await handleWeeklyComp(client);
     // await registerCommands(client);
   } catch (error) {
     console.error(error);

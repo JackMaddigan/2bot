@@ -1,4 +1,5 @@
 const { processAoN, AoN_Result } = require("./formats/AoN");
+const { MoN_Result, processMoN } = require("./formats/MoN");
 
 const events = {
   222: {
@@ -14,10 +15,10 @@ const events = {
   "2bld": {
     name: "2BLD",
     short: "2bld",
-    process: processAoN,
+    process: processMoN,
     scr: ["222so", "0"],
-    attempts: 5,
-    obj: AoN_Result,
+    attempts: 3,
+    obj: MoN_Result,
     showBestSingle: true,
     showBestAo5: false,
   },

@@ -6,7 +6,7 @@ async function handleUnsubmit(int) {
     PermissionsBitField.Flags.KickMembers
   );
   if (!isMod) {
-    await int.reply({ ephemeral: true, content: "Missing permission!" });
+    await int.reply({ flags: 64, content: "Missing permission!" });
     return;
   }
   const user = int.options.getUser("user");
@@ -17,7 +17,7 @@ async function handleUnsubmit(int) {
     user.id,
     eventId,
   ]);
-  await int.reply({ ephemeral: true, content: "Removed successfully!" });
+  await int.reply({ flags: 64, content: "Removed successfully!" });
 }
 
 module.exports = { handleUnsubmit };

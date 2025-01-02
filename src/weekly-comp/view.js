@@ -30,7 +30,7 @@ async function handleView(int) {
   } else {
     embed.addFields(fields);
   }
-  await int.reply({ ephemeral: true, embeds: [embed] });
+  await int.reply({ flags: 64, embeds: [embed] });
 }
 
 module.exports = { handleView };

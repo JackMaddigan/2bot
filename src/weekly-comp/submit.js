@@ -5,12 +5,12 @@ async function handleSubmit(int) {
   const sub = new Submission(int);
 
   if (sub.error) {
-    await int.reply({ ephemeral: true, content: sub.error });
+    await int.reply({ flags: 64, content: sub.error });
     return;
   }
 
   await int.reply({
-    ephemeral: sub.showSubmitFor,
+    flags: sub.showSubmitFor ? 64 : 0,
     content: sub.response.text,
   });
 

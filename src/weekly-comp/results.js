@@ -56,7 +56,7 @@ async function handleCurrentRankings(int) {
     .setTitle("Current Weekly Comp Rankings")
     .setDescription(text.length === 0 ? "No results yet!" : text)
     .setColor(0x7289dd);
-  await int.reply({ ephemeral: true, embeds: [embed] });
+  await int.reply({ flags: 64, embeds: [embed] });
 }
 
 module.exports = { handleCurrentRankings, generateRankedResults };

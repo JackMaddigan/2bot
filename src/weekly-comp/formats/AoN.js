@@ -128,7 +128,7 @@ class AoN_Result {
   toTxtFileString() {
     return `\n#${this.placing} ${this.username} average: ${centiToDisplay(
       this.average
-    )}\nbest:${this.best}\n  (${this.list})`;
+    )}, best:${centiToDisplay(this.best)}\n  (${this.list})`;
   }
 
   toPodiumString() {

@@ -3,6 +3,7 @@ const { events } = require("./events");
 const { generateRankedResults } = require("./results");
 const cstimer = require("cstimer_module");
 const fs = require("fs");
+const sharp = require("sharp");
 
 async function sendPodiums(resultsChannel, rankedResultsData, title) {
   // make podium text
@@ -50,18 +51,28 @@ async function sendScrambles(client, week) {
     `<@&${process.env.weeklyCompRoleId}> Week ${week} Scrambles!`
   );
 
+  const images = [];
+
   for (const eventId of Object.keys(events)) {
     const event = events[eventId];
     if (!event.scr) continue;
     let text = `-\n**${event.name}**`;
+    const scrambles = [];
     for (let i = 0; i < event.attempts; i++) {
-      text += `\n> ${i + 1}) ${cstimer.getScramble(
-        event.scr[0],
-        event.scr[1]
-      )}`;
+      const scramble = cstimer.getScramble(event.scr[0], event.scr[1]);
+      const img = cstimer.getImage(scramble, "222");
+      scrambles.push({ scramble, img });
     }
-    await scramblesChannel.send(text);
+    // Create the combined SVG
+    const combinedSVG = generateCombinedSVG(scrambles, event.name);
+
+    // Convert SVG to PNG
+    const buffer = await sharp(Buffer.from(combinedSVG)).png().toBuffer();
+    images.push({ attachment: buffer, name: "scrambles.png" });
   }
+  await scramblesChannel.send({
+    files: images,
+  });
 }
 
 async function handleWeeklyComp(client) {
@@ -97,6 +108,62 @@ async function getWeek() {
   let week = 90; // set as default week
   if (weekData.length > 0) week = weekData[0].value;
   return week;
+}
+
+function generateCombinedSVG(scrambles, title) {
+  const rowHeight = 240;
+  const topBotPadding = 200;
+  const leftPadding = 100;
+  const totalWidth = 2000;
+  const midLine = rowHeight / 2;
+  const svgRows = scrambles.map((item, index) => {
+    const yOffset = index * rowHeight + topBotPadding;
+    return `
+        <!-- Outer -->
+        <g transform="translate(${leftPadding}, ${yOffset})">
+
+            <!-- Make box around scramble number -->
+            <rect x="0" y="0" width="${leftPadding}" height="${rowHeight}" fill="none" stroke="black" stroke-width="2" />
+
+            <!-- Full Row Box -->
+            <rect x="0" y="0" width="${
+              totalWidth - 2 * leftPadding
+            }" height="${rowHeight}" fill="none" stroke="black" stroke-width="2" />
+
+            <!-- Grey scramble box -->
+            <rect x="${
+              totalWidth - 2 * leftPadding - 300
+            }" y="0" width="${300}" height="${rowHeight}" fill="#c8c4c4" stroke="black" stroke-width="2" />
+
+            <!-- Scramble Number -->
+<text x="${leftPadding / 2}" y="${
+      midLine + 16
+    }" font-family="monospace" font-size="48" fill="black" text-anchor="middle">
+  ${index + 1}
+</text>
+
+          <text x="140" y="${
+            midLine + 16
+          }" font-family="monospace" font-size="64" fill="black">${
+      item.scramble
+    }</text>
+
+          <g transform="translate(1515, 20)">${item.img}</g>
+        </g>
+      `;
+  });
+
+  const totalHeight = scrambles.length * rowHeight + 2 * topBotPadding;
+  return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}">
+      <rect width="100%" height="100%" fill="white" />
+      <text  x="${totalWidth / 2}" y="${
+    (topBotPadding / 3) * 2
+  }" font-family="monospace" font-size="72" fill="black" text-anchor="middle" alignment-baseline="middle">${title}</text>
+
+        ${svgRows.join("\n")}
+      </svg>
+    `;
 }
 
 module.exports = { handleWeeklyComp };

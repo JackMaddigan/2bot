@@ -111,6 +111,8 @@ class AoN_Result {
     // Both values are positive or both are <= 0, so sort normally
     const avgDiff = this.average - other.average;
     if (avgDiff === 0) {
+      if (this.best <= 0 && other.best > 0) return 1;
+      if (this.best > 0 && other.best <= 0) return -1;
       return this.best - other.best;
     }
     return avgDiff;

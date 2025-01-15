@@ -42,7 +42,6 @@ class Submission {
       return;
     }
     const processed = this.event.process(resultText, this);
-    console.log(processed);
     this.error = processed.error;
     if (this.error) return;
     this.data = [

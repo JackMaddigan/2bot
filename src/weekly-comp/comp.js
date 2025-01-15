@@ -26,9 +26,9 @@ async function sendPodiums(resultsChannel, rankedResultsData, title) {
         .filter((result) => result.best > 0)
         .sort((a, b) => a.best - b.best);
       if (bestSingleResults.length > 0)
-        text += `\n\nBest single: ${centiToDisplay(results[0].best)} by <@${
-          results[0].userId
-        }>`;
+        text += `\n\nBest single: ${centiToDisplay(
+          bestSingleResults[0].best
+        )} by <@${results[0].userId}>`;
     }
 
     if (events[eventId].showBestAo5) {

@@ -5,6 +5,7 @@ const { generateRankedResults } = require("./results");
 const cstimer = require("cstimer_module");
 const fs = require("fs");
 const sharp = require("sharp");
+const crypto = require("crypto");
 
 async function sendPodiums(resultsChannel, rankedResultsData, title) {
   // make podium text
@@ -84,6 +85,7 @@ async function sendScrambles(client, week) {
     if (!event.scr) continue;
     const scrambles = [];
     for (let i = 0; i < event.attempts; i++) {
+      cstimer.setSeed(crypto.randomBytes(16).toString("hex"));
       const scramble = cstimer.getScramble(event.scr[0], event.scr[1]);
       const img = cstimer.getImage(scramble, "222");
       scrambles.push({ scramble, img });

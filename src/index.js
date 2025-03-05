@@ -7,14 +7,10 @@ const { handleSubmit } = require("./weekly-comp/submit");
 const { handleCurrentRankings } = require("./weekly-comp/results");
 const { handleView } = require("./weekly-comp/view");
 const { handleUnsubmit } = require("./weekly-comp/unsubmit");
-const { handleWeeklyComp } = require("./weekly-comp/comp");
+const { handleWeeklyComp, handleManualScrambles } = require("./weekly-comp/comp");
 
 const client = new Client({
-  intents: [
-    IntentsBitField.Flags.Guilds,
-    IntentsBitField.Flags.GuildMembers,
-    IntentsBitField.Flags.GuildMessages,
-  ],
+  intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages],
 });
 
 client.once("ready", async (bot) => {
@@ -41,6 +37,9 @@ client.on("interactionCreate", async (int) => {
         break;
       case "unsubmit":
         await handleUnsubmit(int);
+        break;
+      case "send-comp-scrambles":
+        await handleManualScrambles(client, int);
         break;
       default:
         break;

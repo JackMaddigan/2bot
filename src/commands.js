@@ -3,9 +3,7 @@ const { events } = require("./weekly-comp/events");
 
 async function registerCommands(client) {
   try {
-    const submitCommand = new SlashCommandBuilder()
-      .setName("submit")
-      .setDescription("Submit results for the weekly comp!");
+    const submitCommand = new SlashCommandBuilder().setName("submit").setDescription("Submit results for the weekly comp!");
     for (const eventId in events) {
       const event = events[eventId];
       submitCommand.addSubcommand((sub) =>
@@ -13,17 +11,9 @@ async function registerCommands(client) {
           .setName(event.short)
           .setDescription(`Submit results for ${event.short}`)
           .addStringOption((option) =>
-            option
-              .setName("results")
-              .setDescription("Enter your results separated by a space")
-              .setRequired(true)
+            option.setName("results").setDescription("Enter your results separated by a space").setRequired(true)
           )
-          .addUserOption((option) =>
-            option
-              .setName("submit-for")
-              .setDescription("The user")
-              .setRequired(false)
-          )
+          .addUserOption((option) => option.setName("submit-for").setDescription("The user").setRequired(false))
       );
     }
 
@@ -31,9 +21,7 @@ async function registerCommands(client) {
       .setName("unsubmit")
       .setDefaultMemberPermissions(PermissionsBitField.Flags.KickMembers)
       .setDescription("Unsubmit results")
-      .addUserOption((option) =>
-        option.setName("user").setRequired(true).setDescription("The user")
-      )
+      .addUserOption((option) => option.setName("user").setRequired(true).setDescription("The user"))
       .addStringOption((option) =>
         option
           .setName("event")
@@ -47,13 +35,14 @@ async function registerCommands(client) {
           )
       );
 
-    const viewCommand = new SlashCommandBuilder()
-      .setName("view")
-      .setDescription("See your weekly comp submissions");
+    const viewCommand = new SlashCommandBuilder().setName("view").setDescription("See your weekly comp submissions");
 
-    const currentRankingsCommand = new SlashCommandBuilder()
-      .setName("cr")
-      .setDescription("See the current competition rankings");
+    const currentRankingsCommand = new SlashCommandBuilder().setName("cr").setDescription("See the current competition rankings");
+
+    const sendScramblesCommand = new SlashCommandBuilder()
+      .setName("send-comp-scrambles")
+      .setDescription("Only use if bot doesnt send it")
+      .setDefaultMemberPermissions(PermissionsBitField.Flags.KickMembers);
 
     // Register the slash commands
     await client.application.commands.set([
@@ -61,6 +50,7 @@ async function registerCommands(client) {
       unsubmitCommand,
       currentRankingsCommand,
       viewCommand,
+      sendScramblesCommand,
     ]);
     console.log("Slash commands registered successfully.");
   } catch (error) {

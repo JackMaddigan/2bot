@@ -23,23 +23,15 @@ async function sendPodiums(resultsChannel, rankedResultsData, title) {
     }
 
     if (events[eventId].showBestSingle) {
-      const bestSingleResults = results
-        .filter((result) => result.best > 0)
-        .sort((a, b) => a.best - b.best);
+      const bestSingleResults = results.filter((result) => result.best > 0).sort((a, b) => a.best - b.best);
       if (bestSingleResults.length > 0)
-        text += `\n\nBest single: ${centiToDisplay(
-          bestSingleResults[0].best
-        )} by <@${results[0].userId}>`;
+        text += `\n\nBest single: ${centiToDisplay(bestSingleResults[0].best)} by <@${results[0].userId}>`;
     }
 
     if (events[eventId].showBestAo5) {
-      const bestAo5Results = results
-        .filter((result) => result.bestAo5 > 0)
-        .sort((a, b) => a.bestAo5 - b.bestAo5);
+      const bestAo5Results = results.filter((result) => result.bestAo5 > 0).sort((a, b) => a.bestAo5 - b.bestAo5);
       if (bestAo5Results.length > 0)
-        text += `\nBest Ao5: ${centiToDisplay(
-          bestAo5Results[0].bestAo5
-        )} by <@${bestAo5Results[0].userId}>`;
+        text += `\nBest Ao5: ${centiToDisplay(bestAo5Results[0].bestAo5)} by <@${bestAo5Results[0].userId}>`;
     }
     lines.push(text);
   }
@@ -62,7 +54,7 @@ async function sendResultsFile(resultsChannel, rankedResultsData) {
     text += "\n\n";
   }
   text = text.trim();
-  fs.writeFile("results.txt", text || "No Results", function (err) {
+  fs.writeFileSync("results.txt", text || "No Results", function (err) {
     if (err) throw err;
   });
   await resultsChannel.send({ files: ["results.txt"] });
@@ -70,9 +62,7 @@ async function sendResultsFile(resultsChannel, rankedResultsData) {
 
 async function sendScrambles(client, week) {
   // get event ids excluding extra event
-  const scramblesChannel = client.channels.cache.get(
-    process.env.scramblesChannelId
-  );
+  const scramblesChannel = client.channels.cache.get(process.env.scramblesChannelId);
 
   await scramblesChannel.send(
     `Week ${week}: Hello and welcome to our 2x2 solvers comp! During this comp, we will give out 12 scrambles for 2x2, 3 for 2x2 blindfolded and 5 for 2x2 one handed. If you want to submit times, use /submit and type in the individual times for each of the scrambles. They can be comma/space separated, and can have brackets. You can copy paste time list from cstimer. Scrambles will be posted 8pm UTC Wednesday. glhf!\n<@&${process.env.weeklyCompRoleId}>`
@@ -104,13 +94,9 @@ async function sendScrambles(client, week) {
 
 async function handleWeeklyComp(client) {
   let week = await getWeek();
-  const resultsChannel = client.channels.cache.get(
-    process.env.podiumsChannelId
-  );
+  const resultsChannel = client.channels.cache.get(process.env.podiumsChannelId);
   const rankedResultsData = await generateRankedResults();
-  const thereIsResults = Object.values(rankedResultsData).some(
-    (value) => value.length > 0
-  );
+  const thereIsResults = Object.values(rankedResultsData).some((value) => value.length > 0);
   if (thereIsResults) {
     const podiumsTitle = `Week ${week} results!`;
     await sendPodiums(resultsChannel, rankedResultsData, podiumsTitle);
@@ -121,20 +107,25 @@ async function handleWeeklyComp(client) {
   const submitChannel = client.channels.cache.get(process.env.submitChannelId);
   await submitChannel.send(`## Week ${week}`);
   await sendScrambles(client, week);
-  await saveData(
-    `INSERT INTO key_value_store (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`,
-    ["week", week]
-  );
+  await saveData(`INSERT INTO key_value_store (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, [
+    "week",
+    week,
+  ]);
 }
 
 async function getWeek() {
-  const weekData = await readData(
-    `SELECT value FROM key_value_store WHERE key=?`,
-    ["week"]
-  );
+  const weekData = await readData(`SELECT value FROM key_value_store WHERE key=?`, ["week"]);
   let week = 91; // set as default week
   if (weekData.length > 0) week = weekData[0].value;
   return week;
+}
+
+async function handleManualScrambles(client, int) {
+  await int.deferReply({ flags: 64 });
+  await deleteData(`DELETE FROM results`, []);
+  const week = (await getWeek()) + 1;
+  await sendScrambles(client, week);
+  await int.editReply("done");
 }
 
 function generateCombinedSVG(scrambles, title) {
@@ -163,17 +154,11 @@ function generateCombinedSVG(scrambles, title) {
             }" y="0" width="${300}" height="${rowHeight}" fill="#c8c4c4" stroke="black" stroke-width="2" />
 
             <!-- Scramble Number -->
-<text x="${leftPadding / 2}" y="${
-      midLine + 16
-    }" font-family="monospace" font-size="48" fill="black" text-anchor="middle">
+<text x="${leftPadding / 2}" y="${midLine + 16}" font-family="monospace" font-size="48" fill="black" text-anchor="middle">
   ${index + 1}
 </text>
 
-          <text x="140" y="${
-            midLine + 16
-          }" font-family="monospace" font-size="64" fill="black">${
-      item.scramble
-    }</text>
+          <text x="140" y="${midLine + 16}" font-family="monospace" font-size="64" fill="black">${item.scramble}</text>
 
           <g transform="translate(1515, 20)">${item.img}</g>
         </g>
@@ -193,4 +178,4 @@ function generateCombinedSVG(scrambles, title) {
     `;
 }
 
-module.exports = { handleWeeklyComp };
+module.exports = { handleWeeklyComp, handleManualScrambles };
